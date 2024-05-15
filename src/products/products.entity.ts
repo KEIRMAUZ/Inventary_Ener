@@ -32,7 +32,7 @@ export class Product {
     @Column({type: 'int'})
     stock:number
 
-    @Column({type:'varchar',length:20})
+    @Column({type:'varchar',length:20, nullable:true})
     medidas:string
 
     @Column({type:'varchar',length:50})
