@@ -11,7 +11,7 @@ export class ProductsController {
     constructor(private productsService: ProductsService){}
     
     @Post()
-    createProduct(@Body() newProduct:createProductDto): Promise<Product>{
+    createProduct(@Body() newProduct:createProductDto){
         return this.productsService.createProduct(newProduct)
     }
 
@@ -21,7 +21,7 @@ export class ProductsController {
     }
 
     @Get(':ID_folio')
-    getProduct(@Param('ID_folio', ParseIntPipe) ID_folio:number): Promise<Product>{
+    getProduct(@Param('ID_folio', ParseIntPipe) ID_folio:number){
         return this.productsService.getProduct(ID_folio)
     }
 

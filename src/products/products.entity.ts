@@ -5,10 +5,10 @@ export class Product {
     @PrimaryColumn({unique:true,type: 'int'})
     ID_folio:number
 
-    @Column({unique:true,type: 'int'})
+    @Column({type: 'int'})
     ID_num_part:number
 
-    @Column({unique:true,type: 'int'})
+    @Column({type: 'int'})
     ID_cod_proveedor:number
 
     @Column({type: 'varchar',length:30})
