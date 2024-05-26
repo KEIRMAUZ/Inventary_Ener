@@ -1,16 +1,49 @@
-import { Controller,Post,Body,Get,Delete,Param ,ParseIntPipe,Patch} from '@nestjs/common';
+import { Controller,Post,Body,Get,Delete,Param ,ParseIntPipe,Patch,Render, UploadedFile,UseInterceptors} from '@nestjs/common';
 import { createProductDto } from './Dto/create-product.dto';
 import { updateProductDto } from './Dto/update-product.dto';
 import { Product } from './products.entity';
 import { ProductsService } from './products.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 
 
 @Controller('products')
 export class ProductsController {
 
     constructor(private productsService: ProductsService){}
+
+    @Get('inventario')
+    @Render('products/get-products')
+    getInventario(){
+        return{};
+    }
     
-    @Post()
+    @Get('createProduct')
+    @Render('products/create-product')
+    getCreateProduct(){
+        return{}
+    }
+
+    @Get('delete')
+    @Render('products/delete-product')
+    deleteProductView(){
+        return{}
+    }
+
+    @Get('update')
+    @Render('products/update-product')
+    updateProductView(){
+        return{}
+    }
+
+    @Get('test')
+    @Render('products/test')
+    test(){
+        return{}
+    }
+
+    @Post('createProduct')
+    @Render('products/create-product')
     createProduct(@Body() newProduct:createProductDto){
         return this.productsService.createProduct(newProduct)
     }
@@ -34,4 +67,15 @@ export class ProductsController {
     updateProduct(@Param('ID_folio',ParseIntPipe) ID_folio:number, @Body() product: updateProductDto){
         return this.productsService.updateProduct(ID_folio,product)
     }
+
+    //@Patch(':ID_folio')
+    //@UseInterceptors(FileInterceptor('image'))
+    //async updateProduct( @Param('ID_folio') ID_folio: number, @Body() product: updateProductDto,
+        //@UploadedFile() image: Express.Multer.File
+    //) {
+        //if (image) {
+            //product.image = image.buffer;
+        //}
+        //return this.productsService.updateProduct(ID_folio, product);
+    //}
 }

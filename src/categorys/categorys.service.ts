@@ -1,5 +1,5 @@
 import { Injectable,HttpException,HttpStatus } from '@nestjs/common';
-import {createCategoryDto} from 'src/categorys/Dto/create-categorysdto'
+import {createCategoryDto} from 'src/categorys/Dto/create-categorys.dto'
 import {InjectRepository} from '@nestjs/typeorm'
 import {Repository} from 'typeorm'
 import {Category} from 'src/categorys/categorys.entity'
@@ -10,10 +10,17 @@ export class CategorysService {
 
     constructor(@InjectRepository(Category) private categoryRepository:Repository<Category>){}
 
-    async createCategory (category : createCategoryDto){
+    async createCategory (category: createCategoryDto){
+
+        const {category_name} = category;
+
+        if(!category_name){
+            throw new HttpException("El nombre de la categoria necesario",HttpStatus.BAD_REQUEST)
+        }
+
         const categoryFound = await this.categoryRepository.findOne({
             where :{
-                ID_category: category.ID_category
+                category_name: category.category_name
             }
         })
         if (categoryFound){
@@ -53,7 +60,7 @@ export class CategorysService {
         return this.categoryRepository.delete(ID_category)
     }
 
-    async updateCategory(ID_category:number,category:updateCategoryDto){
+    async updateCategory(ID_category:number,category: updateCategoryDto){
         const categoryFound = await this.categoryRepository.findOne({
             where:{
                 ID_category

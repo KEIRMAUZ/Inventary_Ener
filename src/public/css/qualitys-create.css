@@ -1,0 +1,46 @@
+    .fondo {
+        background: url('path/to/your/background/image.jpg') no-repeat center center;
+        background-size: cover;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .capa-fondo {
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .contenedor {
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .formulario .form-group {
+        margin-bottom: 15px;
+    }
+    .boton--primario {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .boton--secundario {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .boton--primario:hover,
+    .boton--secundario:hover {
+        opacity: 0.8;
+    }

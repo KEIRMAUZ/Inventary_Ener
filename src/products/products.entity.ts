@@ -1,4 +1,10 @@
-import {Column,Entity,PrimaryColumn} from 'typeorm'
+import {Column,Entity,PrimaryColumn,ManyToOne,JoinColumn,JoinTable,ManyToMany} from 'typeorm'
+import {Category} from 'src/categorys/categorys.entity'
+import {Quality} from 'src/qualitys/quality.entity'
+import { Surtir_producto } from 'src/surtir_productos/surtir_productos.entity'
+import { Pedido } from 'src/pedidos/pedidos.entity'
+import { Encargar_producto } from 'src/encargar_productos/encargar_productos.entity'
+
 
 @Entity('products')
 export class Product {
@@ -8,8 +14,8 @@ export class Product {
     @Column({type: 'int'})
     ID_num_part:number
 
-    @Column({type: 'int'})
-    ID_cod_proveedor:number
+    @Column({type: 'varchar', length:'20'})
+    ID_cod_proveedor:string
 
     @Column({type: 'varchar',length:30})
     name_product:string
@@ -19,12 +25,6 @@ export class Product {
 
     @Column({type: 'double'})
     precio_mayoreo:number
-
-    @Column({type: 'int'})
-    ID_category:number
-
-    @Column({type:'int'})
-    ID_quality:number
 
     @Column()
     description:string
@@ -41,9 +41,32 @@ export class Product {
     @Column({type:'varchar',length:50})
     tipo_maquina:string
 
-    @Column({type:'blob'})
-    image:Blob
+    //@Column({type:'bytea'})
+    //image:Buffer
 
     @Column()
     lugar_almacenamiento:string
+
+    @Column({type: 'int'})
+    ID_category:number
+
+    @ManyToOne(() => Category, (category) => category.product)
+    @JoinColumn({name:'ID_category'})
+    category: Category
+
+    @Column({type:'int'})
+    ID_quality:number
+    
+    @ManyToOne(() => Quality)
+    @JoinColumn({name:'ID_quality'})
+    quality: Quality
+
+
+    
+
+    @ManyToMany(()=> Surtir_producto)
+    surtirProducto: Surtir_producto[]
+
+    @ManyToMany( ()=> Pedido)
+    pedido:Pedido[]
 }

@@ -1,0 +1,110 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actualizar Producto</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+
+    <div class="container mt-5">
+    <h1>Actualizar Producto</h1>
+    <form id="updateProductForm">
+        <div class="form-group">
+        <label for="ID_folio">ID del Producto</label>
+        <input type="number" class="form-control" id="ID_folio" name="ID_folio" required>
+        </div>
+
+        <div class="form-group">
+        <label for="ID_num_part">Número de Parte</label>
+        <input type="number" class="form-control" id="ID_num_part" name="ID_num_part">
+        </div>
+        <div class="form-group">
+        <label for="ID_cod_proveedor">Código de Proveedor</label>
+        <input type="number" class="form-control" id="ID_cod_proveedor" name="ID_cod_proveedor">
+        </div>
+        <div class="form-group">
+        <label for="name_product">Nombre del Producto</label>
+        <input type="text" class="form-control" id="name_product" name="name_product">
+        </div>
+        <div class="form-group">
+        <label for="unit_price">Precio Unitario</label>
+        <input type="number" class="form-control" id="unit_price" name="unit_price">
+        </div>
+        <div class="form-group">
+        <label for="ID_category">ID de Categoría</label>
+        <input type="number" class="form-control" id="ID_category" name="ID_category">
+        </div>
+        <div class="form-group">
+        <label for="ID_quality">ID de Calidad</label>
+        <input type="number" class="form-control" id="ID_quality" name="ID_quality">
+        </div>
+        <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea class="form-control" id="description" name="description"></textarea>
+        </div>
+        <div class="form-group">
+        <label for="stock">Stock</label>
+        <input type="number" class="form-control" id="stock" name="stock">
+        </div>
+        <div class="form-group">
+        <label for="medidas">Medidas</label>
+        <input type="text" class="form-control" id="medidas" name="medidas">
+        </div>
+        <div class="form-group">
+        <label for="para_que_maquina">Para qué máquina</label>
+        <input type="text" class="form-control" id="para_que_maquina" name="para_que_maquina">
+        </div>
+        <div class="form-group">
+        <label for="tipo_maquina">Tipo de máquina</label>
+        <input type="text" class="form-control" id="tipo_maquina" name="tipo_maquina">
+        </div>
+        <div class="form-group">
+        <label for="image">Imagen</label>
+        <input type="file" class="form-control" id="image" name="image">
+        </div>
+        <div class="form-group">
+        <label for="lugar_almacenamiento">Lugar de almacenamiento</label>
+        <input type="text" class="form-control" id="lugar_almacenamiento" name="lugar_almacenamiento">
+        </div>
+        <div class="form-group">
+        <label for="precio_mayoreo">Precio de Mayoreo</label>
+        <input type="number" class="form-control" id="precio_mayoreo" name="precio_mayoreo">
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+    </form>
+    </div>
+
+    <script>
+    document.getElementById('updateProductForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const form = document.getElementById('updateProductForm');
+    const formData = new FormData(form);
+    const productId = formData.get('ID_folio');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+    try {
+        const response = await fetch(`http://localhost:3000/products/${productId}`, {
+        method: 'PATCH',
+        body: formData
+        });
+        if (response.ok) {
+        alert('Producto actualizado correctamente');
+        location.reload(); 
+        } else {
+        const error = await response.json();
+        alert(`Error: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error en la conexión con el servidor');
+    }
+    });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+    </html>
