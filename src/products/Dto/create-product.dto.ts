@@ -24,7 +24,7 @@ export class createProductDto{
     para_que_maquina:string
     @IsNotEmpty({message:'El campo es requerido'})
     tipo_maquina:string
-    //image:Blob
+    image:string
     lugar_almacenamiento:string
     @IsNotEmpty({message:'El campo es requerido'})
     precio_mayoreo:number

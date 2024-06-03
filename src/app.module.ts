@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
-import {TypeOrmModule} from '@nestjs/typeorm'
 import { CategorysModule } from './categorys/categorys.module';
 import { QualityModule } from './qualitys/quality.module';
 import { SurtirProductosModule } from './surtir_productos/surtir_productos.module';
@@ -10,8 +12,7 @@ import { PersonModule } from './person/person.module';
 import { RolesModule } from './roles/roles.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { EncargarProductosModule } from './encargar_productos/encargar_productos.module';
-
-
+import { SurtirAndProductosModule } from './surtir-and-productos/surtir-and-productos.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -24,6 +25,9 @@ import { EncargarProductosModule } from './encargar_productos/encargar_productos
       entities:[__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), 
+    }),
     ProductsModule,
     CategorysModule,
     QualityModule,
@@ -31,7 +35,9 @@ import { EncargarProductosModule } from './encargar_productos/encargar_productos
     PersonModule,
     RolesModule,
     PedidosModule,
-    EncargarProductosModule],
+    EncargarProductosModule,
+    SurtirAndProductosModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

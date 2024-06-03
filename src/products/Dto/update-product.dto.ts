@@ -11,7 +11,7 @@ export class updateProductDto {
     medidas?:string
     para_que_maquina?:string
     tipo_maquina?:string
-    image?:Buffer
+    image?:string
     lugar_almacenamiento?:string
     precio_mayoreo?:number
 }

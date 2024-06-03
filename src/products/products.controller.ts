@@ -1,9 +1,11 @@
-import { Controller,Post,Body,Get,Delete,Param ,ParseIntPipe,Patch,Render, UploadedFile,UseInterceptors} from '@nestjs/common';
+import { Controller,Post,Body,Get,Delete,Param ,ParseIntPipe,Patch,Render, UploadedFile,UseInterceptors,Res,HttpException,HttpStatus,NotFoundException} from '@nestjs/common';
+import {join} from 'path'
+import { promises as fs } from 'fs';
 import { createProductDto } from './Dto/create-product.dto';
 import { updateProductDto } from './Dto/update-product.dto';
-import { Product } from './products.entity';
 import { ProductsService } from './products.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 
 
@@ -36,21 +38,37 @@ export class ProductsController {
         return{}
     }
 
-    @Get('test')
-    @Render('products/test')
-    test(){
-        return{}
-    }
-
+    
     @Post('createProduct')
     @Render('products/create-product')
-    createProduct(@Body() newProduct:createProductDto){
-        return this.productsService.createProduct(newProduct)
+    @UseInterceptors(FileInterceptor('image'))
+    async createProduct(
+        @Body() newProduct: createProductDto,
+        @UploadedFile() image: Express.Multer.File,
+    ) {
+        if (image) {
+        newProduct.image = `imagenes/${image.filename}`; 
+        }
+        return this.productsService.createProduct(newProduct);
     }
 
-    @Get()
-    getProducts():Promise<Product[]>{
-        return this.productsService.getProducts()
+    
+    @Get(':ID_folio/image')
+    async getProductImage(@Param('ID_folio') ID_folio: number, @Res() res: Response) {
+        const product = await this.productsService.getProduct(ID_folio);
+
+        if (!product || !product.image) {
+        throw new NotFoundException('Image not found');
+        }
+
+        const imagePath = join(__dirname, '../../public', product.image);
+
+        try {
+        await fs.access(imagePath); 
+        res.sendFile(imagePath);
+        } catch (err) {
+        throw new NotFoundException('Image not found');
+        }
     }
 
     @Get(':ID_folio')
@@ -58,24 +76,33 @@ export class ProductsController {
         return this.productsService.getProduct(ID_folio)
     }
 
+    @Get()
+    getProducts(){
+        return this.productsService.getProducts()
+    }
+
     @Delete(':ID_folio')
     deleteProduct(@Param('ID_folio', ParseIntPipe) ID_folio:number){
         return this.productsService.deleteProduct(ID_folio)
     }
 
+    
     @Patch(':ID_folio')
-    updateProduct(@Param('ID_folio',ParseIntPipe) ID_folio:number, @Body() product: updateProductDto){
-        return this.productsService.updateProduct(ID_folio,product)
-    }
+    @UseInterceptors(FileInterceptor('image'))
+    async updateProduct(
+        @Param('ID_folio') ID_folio: number,
+        @Body() updateProductDto: updateProductDto,
+        @UploadedFile() image: Express.Multer.File,
+    ) {
+        
+        if (image) {
+        updateProductDto.image = `imagenes/${image.filename}`;
+        }
 
-    //@Patch(':ID_folio')
-    //@UseInterceptors(FileInterceptor('image'))
-    //async updateProduct( @Param('ID_folio') ID_folio: number, @Body() product: updateProductDto,
-        //@UploadedFile() image: Express.Multer.File
-    //) {
-        //if (image) {
-            //product.image = image.buffer;
-        //}
-        //return this.productsService.updateProduct(ID_folio, product);
-    //}
+        const updatedProduct = await this.productsService.updateProduct(ID_folio, updateProductDto);
+        if (!updatedProduct) {
+        throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+        }
+        return { message: 'Producto actualizado de manera correcta' };
+    }
 }

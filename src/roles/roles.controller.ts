@@ -1,4 +1,4 @@
-import { Controller,Post,Body,Get,Delete,Param,ParseIntPipe, Patch } from '@nestjs/common';
+import { Controller,Post,Body,Get,Delete,Param,ParseIntPipe, Render,Patch } from '@nestjs/common';
 import { createRolDto } from './Dto/create-rol.dto';
 import { updateRolDto } from './Dto/update-rol.dto';
 import { Role } from './roles.entity';
@@ -8,10 +8,36 @@ import { RolesService } from './roles.service';
 export class RolesController {
     constructor(private rolesService:RolesService){}
 
-    @Post()
+    @Post('create')
+    @Render('roles/roles-create')
     createRole(@Body() newRole:createRolDto){ 
         return this.rolesService.createRol(newRole)
     }
+
+    @Get('getRoles')
+    @Render('roles/roles-get')
+    getRolesView(){
+        return{};
+    }
+
+    @Get('create')
+    @Render('roles/roles-create')
+    createRoleView(){
+        return{};
+    }
+
+    @Get('delete')
+    @Render('roles/roles-delete')
+    deleteRoleView(){
+        return{};
+    }
+
+    @Get('update')
+    @Render('roles/roles-update')
+    updateRoleView(){
+        return{};
+    }
+    
 
     @Get()
     getRoles():Promise<Role[]>{

@@ -30,6 +30,12 @@ export class QualityController {
         return{};
     }
 
+    @Get('update')
+    @Render('qualitys/qualitys-update')
+    updateQualitys(){
+        return{};
+    }
+
     @Post('create')
     @Render('qualitys/qualitys-create')
     createQuality(@Body() newQuality:createQualityDto){

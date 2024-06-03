@@ -26,9 +26,12 @@
                 <div class="col-md-2 mb-4">
                     <div class="list-group">
                         <button class="list-group-item list-group-item-action btn btn-primary mb-2" ><a href="http://localhost:3000/qualitys/create" class="link-underline-light">Crear calidad</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-warning mb-2"><a href="" class="link-warning link-underline-light">Actualizar calidad</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-warning mb-2"><a href="http://localhost:3000/qualitys/update" class="link-warning link-underline-light">Actualizar calidad</a></button>
                         <button class="list-group-item list-group-item-action btn btn-danger"><a href="http://localhost:3000/qualitys/delete" class="link-danger link-underline-light">Borrar calidad</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-success"><a id="refreshPage" class="link-success link-underline-light">Refresh</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-success" id="refreshPage">
+                        <a class="link-success link-underline-light">Refresh</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-dark"><a id="products" href="http://localhost:3000/products/inventario" class="link-dark link-underline-light">Ver productos</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-primary"><a id="products" href="http://localhost:3000/" class="link-primary link-underline-light">Panel de control</a></button>
                     </div>
                 </div>
                 <div class="col-md-10">
@@ -67,12 +70,17 @@
         });
         </script>
         <script>
-            const refresh = document.getElementById("refreshPage")
 
-            refresh.addEventListener("click",function(){
-                location.reload(true)
-            })
-        </script>
+        document.getElementById("refreshPage").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true); 
+        });
+
+        document.querySelector("#refreshPage a").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true);
+        });
+    </script>>
 
         <script>
             async function fetchQuality() {
@@ -92,7 +100,7 @@
                         tableBody.appendChild(row);
                     });
                 } catch (error) {
-                    console.error('Error fetching products:', error);
+                    console.error('Error fetching qualitys:', error);
                 }
             }
 

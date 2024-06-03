@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creacion de producto</title>
+    <title>Actualizar producto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
@@ -11,45 +11,45 @@
         <div class="card">
             <div class="card-header">
                 <h4>Actualizar producto</h4>
-                <p>{{message}}</p>>
+                <p>{{message}}</p>
             </div>
             <div class="card-body">
-                <form id="updateProductForm">
+                <form id="updateProductForm" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="folioProducto">Folio del producto a actualizar</label>
+                        <label for="folioProductoact">Folio del producto a actualizar</label>
                         <input type="number" class="form-control" id="folioProductoact" name="ID_folio_act" required>
                     </div>
                     <div class="form-group">
                         <label for="folioProducto">Folio del producto (Opcional)</label>
-                        <input type="number" class="form-control" id="folioProducto" name="ID_folio" >
+                        <input type="number" class="form-control" id="folioProducto" name="ID_folio">
                     </div>
                     <div class="form-group">
                         <label for="numeroParte">Número de parte</label>
-                        <input type="number" class="form-control" id="numeroParte" name="ID_num_part" >
+                        <input type="number" class="form-control" id="numeroParte" name="ID_num_part">
                     </div>
                     <div class="form-group">
                         <label for="codigoProveedor">Código de proveedor</label>
-                        <input type="text" class="form-control" id="codigoProveedor" name="ID_cod_proveedor" >
+                        <input type="text" class="form-control" id="codigoProveedor" name="ID_cod_proveedor">
                     </div>
                     <div class="form-group">
                         <label for="nombreProducto">Nombre del producto</label>
-                        <input type="text" class="form-control" id="nombreProducto" name="name_product" >
+                        <input type="text" class="form-control" id="nombreProducto" name="name_product">
                     </div>
                     <div class="form-group">
                         <label for="precioUnitario">Precio unitario</label>
-                        <input type="number" class="form-control" id="precioUnitario" name="unit_price" >
+                        <input type="number" class="form-control" id="precioUnitario" name="unit_price">
                     </div>
                     <div class="form-group">
                         <label for="precioMayoreo">Precio de mayoreo</label>
-                        <input type="number" class="form-control" id="precioMayoreo" name="precio_mayoreo" >
+                        <input type="number" class="form-control" id="precioMayoreo" name="precio_mayoreo">
                     </div>
                     <div class="form-group">
                         <label for="descripcion">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="description" rows="3" ></textarea>
+                        <textarea class="form-control" id="descripcion" name="description" rows="3"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="stock">Stock</label>
-                        <input type="number" class="form-control" id="stock" name="stock" >
+                        <input type="number" class="form-control" id="stock" name="stock">
                     </div>
                     <div class="form-group">
                         <label for="medidas">Medidas</label>
@@ -57,23 +57,23 @@
                     </div>
                     <div class="form-group">
                         <label for="maquina">Máquina</label>
-                        <input type="text" class="form-control" id="maquina" name="para_que_maquina" >
+                        <input type="text" class="form-control" id="maquina" name="para_que_maquina">
                     </div>
                     <div class="form-group">
                         <label for="tipoMaquina">Tipo de máquina</label>
-                        <input type="text" class="form-control" id="tipoMaquina" name="tipo_maquina" >
+                        <input type="text" class="form-control" id="tipoMaquina" name="tipo_maquina">
                     </div>
                     <div class="form-group">
                         <label for="imagen">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen" >
+                        <input type="file" class="form-control" id="imagen" name="image">
                     </div>
                     <div class="form-group">
                         <label for="lugarAlmacenamiento">Lugar de almacenamiento</label>
-                        <input type="text" class="form-control" id="lugarAlmacenamiento" name="lugar_almacenamiento" >
+                        <input type="text" class="form-control" id="lugarAlmacenamiento" name="lugar_almacenamiento">
                     </div>
                     <div class="form-group">
                         <label for="idCategoria">ID de la categoría</label>
-                        <input type="number" class="form-control" id="idCategoria" name="ID_category" >
+                        <input type="number" class="form-control" id="idCategoria" name="ID_category">
                     </div>
                     <div class="form-group">
                         <label for="idCalidad">ID de la calidad</label>
@@ -86,43 +86,33 @@
         </div>
     </div>
     
-<script>
-document.getElementById('updateProductForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Evita el envío por defecto del formulario
+    <script>
+        document.getElementById('updateProductForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-    const form = event.target;
-    const formData = new FormData(form);
+            const form = event.target;
+            const formData = new FormData(form);
+            const ID_folio_act = formData.get('ID_folio_act'); 
 
-    // Convertir FormData a un objeto JSON
-    const productData = {};
-    formData.forEach((value, key) => {
-        productData[key] = value;
-    });
+            try {
+                const response = await fetch(`http://localhost:3000/products/${ID_folio_act}`, {
+                    method: 'PATCH',
+                    body: formData 
+                });
 
-    const ID_folio_act = formData.get('ID_folio_act'); 
+                if (!response.ok) {
+                    throw new Error('Error al actualizar el producto');
+                }
 
-    try {
-        const response = await fetch(`http://localhost:3000/products/${ID_folio_act}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(productData)
+                const result = await response.json();
+                console.log('Producto actualizado', result);
+                alert('Producto actualizado con éxito');
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al actualizar el producto');
+            }
         });
-
-        if (!response.ok) {
-            throw new Error('Error al actualizar el producto');
-        }
-
-        const result = await response.json();
-        console.log('Producto actualizado', result);
-        alert('Producto actualizado con éxito');
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Hubo un problema al actualizar el producto');
-    }
-});
-</script>
+    </script>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>

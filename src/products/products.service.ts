@@ -1,4 +1,4 @@
-import { Injectable ,HttpException,HttpStatus} from '@nestjs/common';
+import { Injectable ,HttpException,HttpStatus,NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm'
 import {Repository} from 'typeorm'
 import {Product} from 'src/products/products.entity'
@@ -21,7 +21,7 @@ export class ProductsService {
         const {name_product} = product
         const {unit_price} = product
         const {precio_mayoreo} = product
-        const {ID_quality} = product
+        const {ID_quality} = product    
         const {ID_category} = product
         const {description} = product
         const {stock} = product
@@ -87,27 +87,30 @@ export class ProductsService {
         if (productFound){
             return new HttpException(`El producto ya existe`,HttpStatus.CONFLICT)
         };
+        
         const newProduct = this.productRepository.create(product)
-        return this.productRepository.save(newProduct),{message:'Producto creado de manera correcta'}
+        return this.productRepository.save(newProduct)
     }
 
     getProducts(){
         return this.productRepository.find()
+
     }
 
-    async getProduct(ID_folio:number){
-        
+    async getProduct(ID_folio: number): Promise<Product> {
         const productFound = await this.productRepository.findOne({
-            where:{
-                ID_folio
-            }
-        })
+            where: { ID_folio }
+        });
 
-        if (!productFound){
-            return new HttpException("No se encontro el producto",HttpStatus.NOT_FOUND)
+        if (!productFound) {
+            throw new NotFoundException('No se encontro el producto');
         }
-        return productFound
+
+        return productFound;
+        
     }
+
+
     
     async deleteProduct(ID_folio:number){
         const productFound = await this.productRepository.findOne({
@@ -123,7 +126,7 @@ export class ProductsService {
         return this.productRepository.delete(ID_folio)
     }
 
-    async updateProduct(ID_folio:number, product:updateProductDto){
+    /*async updateProduct(ID_folio:number, product:updateProductDto){
         const productFound = await this.productRepository.findOne({
             where:{
                 ID_folio
@@ -136,5 +139,24 @@ export class ProductsService {
 
         const updateProduct = Object.assign(productFound,product)
         return this.productRepository.save(updateProduct)
-    }
+    }*/
+
+    async updateProduct(ID_folio: number, updateProductDto: updateProductDto): Promise<Product> {
+            const product = await this.productRepository.findOne({
+                where: {
+                        ID_folio 
+                    } });
+            if (!product) {
+            throw new NotFoundException('Product not found');
+            }
+        
+            Object.keys(updateProductDto).forEach(key => {
+            if (updateProductDto[key] === undefined || updateProductDto[key] === null || updateProductDto[key] === '') {
+                delete updateProductDto[key];
+            }
+            });
+        
+            Object.assign(product, updateProductDto);
+            return await this.productRepository.save(product);
+        }
 }

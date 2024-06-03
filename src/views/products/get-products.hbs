@@ -28,7 +28,12 @@
                         <button class="list-group-item list-group-item-action btn btn-primary mb-2" ><a href="http://localhost:3000/products/createProduct" class="link-underline-light">Crear producto</a></button>
                         <button class="list-group-item list-group-item-action btn btn-warning mb-2"><a href="http://localhost:3000/products/update" class="link-warning link-underline-light">Actualizar producto</a></button>
                         <button class="list-group-item list-group-item-action btn btn-danger"><a href="http://localhost:3000/products/delete" class="link-danger link-underline-light">Borrar producto</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-success"><a id="refreshPage" class="link-success link-underline-light">Refresh</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/qualitys/getQualitys" class="link-dark link-underline-light">Ver calidades</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/categorys/getCategorys" class="link-dark link-underline-light">Ver categorias</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-success" id="refreshPage">
+                        <a class="link-success link-underline-light">Refresh</a></button>
+                        <button class="list-group-item list-group-item-action btn btn-primary"><a id="products" href="http://localhost:3000/" class="link-primary link-underline-light">Panel de control</a></button>
+                        
                     </div>
             </div>
             <div class="col-md-10">
@@ -67,7 +72,8 @@
             </div>
         </div>
         </div>
-
+        
+        
         <script>
         document.getElementById('searchProducts').addEventListener('input', function() {
         const filter = this.value.toLowerCase();
@@ -80,49 +86,65 @@
         });
         </script>
         <script>
-            async function fetchProducts() {
-                try {
-                    const response = await fetch('http://localhost:3000/products');
-                    const productos = await response.json();
+        document.getElementById('searchProducts').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#productTable tbody tr');
 
-                    const tableBody = document.querySelector('#productTable tbody');
-                    tableBody.innerHTML = '';
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
 
-                    productos.forEach(products => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${products.ID_folio}</td>
-                            <td>${products.ID_num_part}</td>
-                            <td>${products.ID_cod_proveedor}</td>
-                            <td>${products.name_product}</td>
-                            <td>${products.unit_price}</td>
-                            <td>${products.precio_mayoreo}</td>
-                            <td>${products.ID_quality}</td>
-                            <td>${products.ID_category}</td>
-                            <td>${products.para_que_maquina}</td>
-                            <td>${products.tipo_maquina}</td>
-                            <td>${products.description}</td>
-                            <td>${products.stock}</td>
-                            <td>${products.medidas}</td>
-                            <td>${products.lugar_almacenamiento}</td>
-                            <td>${products.image}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                } catch (error) {
-                    console.error('Error fetching products:', error);
-                }
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:3000/products');
+                const productos = await response.json();
+
+                const tableBody = document.querySelector('#productTable tbody');
+                tableBody.innerHTML = '';
+
+                productos.forEach(products => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = 
+                        `<td>${products.ID_folio}</td>
+                        <td>${products.ID_num_part}</td>
+                        <td>${products.ID_cod_proveedor}</td>
+                        <td>${products.name_product}</td>
+                        <td>${products.unit_price}</td>
+                        <td>${products.precio_mayoreo}</td>
+                        <td>${products.ID_quality}</td>
+                        <td>${products.ID_category}</td>
+                        <td>${products.para_que_maquina}</td>
+                        <td>${products.tipo_maquina}</td>
+                        <td>${products.description}</td>
+                        <td>${products.stock}</td>
+                        <td>${products.medidas}</td>
+                        <td>${products.lugar_almacenamiento}</td>
+                        <td>${products.image ? `<img src="/${products.image}" alt="Imagen" width="50rem" height="50rem">` : 'No image'}</td>`;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
             }
+        }
 
-            document.addEventListener('DOMContentLoaded', fetchProducts);
-        </script>
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+
         
-        <script>
-            const refresh = document.getElementById("refreshPage")
+    </script>
+    <script>
 
-            refresh.addEventListener("click",function(){
-                location.reload(true)
-            })
-        </script>
+        document.getElementById("refreshPage").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true); 
+        });
+
+        document.querySelector("#refreshPage a").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true);
+        });
+    </script>
+
     </body>
 </html>

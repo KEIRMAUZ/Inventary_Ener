@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Render,Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { createSurtirDto } from './Dto/create-surtir.dto';
 import { updateSurtirDto } from './Dto/update-surtir.dto';
 import { Surtir_producto } from './surtir_productos.entity';
@@ -8,7 +8,8 @@ import { SurtirProductosService } from './surtir_productos.service';
 export class SurtirProductosController {
     constructor(private surtirService: SurtirProductosService){}
 
-    @Post()
+    @Post('create')
+    @Render('surtirProductos/surtir-create')
     createSurtir(@Body() newSurtir: createSurtirDto){
         return this.surtirService.createSurtir(newSurtir)
     }
@@ -16,6 +17,30 @@ export class SurtirProductosController {
     @Get()
     getSurtir():Promise<Surtir_producto[]>{
         return this.surtirService.getSurtir()
+    }
+
+    @Get('getSurtir')
+    @Render('surtirProductos/surtir-get')
+    getSurtirView(){
+        return{}
+    }
+
+    @Get('create')
+    @Render('surtirProductos/surtir-create')
+    createViewSurtir(){
+        return{}
+    }
+
+    @Get('delete')
+    @Render('surtirProductos/surtir-delete')
+    deleteViewSurtir(){
+        return{}
+    }
+
+    @Get('update')
+    @Render('surtirProductos/surtir-update')
+    updateViewSurtir(){
+        return{}
     }
 
     @Get(':ID_surtir')

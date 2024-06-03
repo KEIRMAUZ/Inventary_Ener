@@ -11,10 +11,10 @@
         <div class="card">
             <div class="card-header">
                 <h4>Crear producto</h4>
-                <p>{{message}}</p>>
+                <p>{{message}}</p>
             </div>
             <div class="card-body">
-                <form id="createProductForm" method="post" action="/products/createProduct">
+                <form id="createProductForm" method="post" action="/products/createProduct" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="folioProducto">Folio del producto</label>
                         <input type="number" class="form-control" id="folioProducto" name="ID_folio" required>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="form-group">
                         <label for="imagen">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen" >
+                        <input type="file" class="form-control" id="imagen" name="image"> 
                     </div>
                     <div class="form-group">
                         <label for="lugarAlmacenamiento">Lugar de almacenamiento</label>

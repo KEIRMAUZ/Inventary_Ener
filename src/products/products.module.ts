@@ -7,11 +7,21 @@ import { CategorysModule } from 'src/categorys/categorys.module';
 import { QualityModule } from 'src/qualitys/quality.module';
 import { SurtirProductosModule } from 'src/surtir_productos/surtir_productos.module';
 import { EncargarProductosModule } from 'src/encargar_productos/encargar_productos.module';
-
+import * as multer from 'multer'
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
     imports:[
-        TypeOrmModule.forFeature([Product]),CategorysModule,QualityModule,SurtirProductosModule,EncargarProductosModule
+        TypeOrmModule.forFeature([Product]),CategorysModule,QualityModule,SurtirProductosModule,EncargarProductosModule,MulterModule.register({
+            storage: multer.diskStorage({
+                destination: (req, file, cb) => {
+                    cb(null, 'src/public/imagenes');
+                },
+                filename: (req, file, cb) => {
+                    cb(null, file.originalname);
+                },
+                }),
+            }),
     ],
     
     controllers: [ProductsController],
