@@ -1,6 +1,8 @@
-import { Entity,Column, PrimaryGeneratedColumn,ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity,Column, PrimaryGeneratedColumn,ManyToOne, OneToMany,JoinColumn, ManyToMany, JoinTable } from "typeorm";
 import { Person } from "src/person/person.entity";
-import { Product } from "src/products/products.entity";
+
+import { ProductoPedido } from 'src/pedidos_products/pedidos_products.entity'
+//import {PedidoProduct} from '../pedidos_products/pedidos_products.entity'
 
 @Entity({name:'pedidos'})
 export class Pedido {
@@ -8,11 +10,17 @@ export class Pedido {
     @PrimaryGeneratedColumn()
     ID_pedido:number
 
-    @Column()
+    @Column({nullable:true})
     ID_person:number
+
+    @Column({type:'varchar', length:30})
+    name_person:string
 
     @Column({type:'datetime', default: () => 'CURRENT_TIMESTAMP'})
     fecha:Date
+
+    @Column()
+    descuento:number
 
     @Column()
     amount:number
@@ -23,16 +31,8 @@ export class Pedido {
     })
     person:Person[]
 
-    @ManyToMany(()=>Product)
-    @JoinTable({
-        name:'pedidos_products',
-        joinColumn:{
-            name:'ID_pedido'
-        },
-        inverseJoinColumn:{
-            name:'ID_folio'
-        }
-    })
-    product: Product[]
+
+    @OneToMany(() => ProductoPedido, productoPedido => productoPedido.pedido)
+    productoPedidos: ProductoPedido[];
     
 }

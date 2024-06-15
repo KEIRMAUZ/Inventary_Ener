@@ -1,4 +1,4 @@
-import { Controller, Post, Delete, Param, Body, Get, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Delete, Param, Body, Get, Render,ParseIntPipe } from '@nestjs/common';
 import { SurtirAndProductosService } from './surtir-and-productos.service';
 import { CreateProductToSurtirDto } from './Dto/createProductoToSurtir.dto';
 
@@ -12,10 +12,29 @@ export class SurtirAndProductosController {
         return this.productToSurtirService.getAllSurtirWithProducts();
     }
 
+    @Get('get')
+    @Render('surtirandproducts/surtirandproducts-get')
+    getView(){
+        return{}
+    }
+
+    @Get('create')
+    @Render('surtirandproducts/surtirandproducts-create')
+    createView(){
+        return{}
+    }
+
+    @Get('delete')
+    @Render('surtirandproducts/surtirandproducts-delete')
+    deleteView(){
+        return{}
+    }
+
     @Post()
     addProductToSurtir(@Body() createProductToSurtirDto: CreateProductToSurtirDto) {
         return this.productToSurtirService.addProductToSurtir(createProductToSurtirDto);
     }
+    
 
     @Delete(':ID_surtir/:ID_folio')
     removeProductFromSurtir(

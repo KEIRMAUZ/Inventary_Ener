@@ -1,4 +1,4 @@
-import { Controller, Body,Get,Delete,Patch,Param,Post,ParseIntPipe } from '@nestjs/common';
+import { Controller, Body,Get,Render,Delete,Patch,Param,Post,ParseIntPipe } from '@nestjs/common';
 import { EncargarProductosService } from './encargar_productos.service';
 import { createEncargoDto } from './Dto/create-encargo.dto';
 import { updateEncargoDto } from './Dto/update-encargo.dto';
@@ -8,9 +8,28 @@ import { Encargar_producto } from './encargar_productos.entity';
 export class EncargarProductosController {
     constructor(private encargoService:EncargarProductosService){}
 
-    @Post()
+    @Post('create')
+    @Render('encargar_productos/encargar-create')
     createEncargo(@Body()newEncargo:createEncargoDto){
         return this.encargoService.createPedido(newEncargo)
+    }
+
+    @Get('get')
+    @Render('encargar_productos/encargar-get')
+    encargoGetView(){
+        return{}
+    }
+
+    @Get('create')
+    @Render('encargar_productos/encargar-create')
+    encargoCreateView(){
+        return{}
+    }
+
+    @Get('delete')
+    @Render('encargar_productos/encargar-delete')
+    encargodeleteView(){
+        return{}
     }
 
     @Get()

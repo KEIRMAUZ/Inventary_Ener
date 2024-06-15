@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido de productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+        }
+        .card-img-top {
+            width: 100%;
+            height: 15rem;
+            object-fit: cover;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            color: #333;
+            margin-bottom: 0.75rem;
+        }
+        .card-text {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .card-text label {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        #searchProducts {
+            border-radius: 25px;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+        #searchProducts:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Lista de Productos</a>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="http://localhost:3000/pedidos/get">Pedidos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="http://localhost:3000/products/inventario">Productos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <i class="fas fa-shopping-cart"> Carrito</i> 
+                                    </a>
+                                </li>
+                            </ul>
+                            <input type="text" id="searchProducts" class="form-control me-2" placeholder="Buscar producto...">
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row" id="productContainer">
+
+        </div>
+
+        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cartModalLabel">Pedido a realizar</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="cartItemList" class="list-group"></ul>
+                    </div>
+                    <div class="modal-footer">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <script>
+        let cartItems = [];
+
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:3000/products');
+                const productos = await response.json();
+                const productContainer = document.getElementById('productContainer');
+                const originalProducts = productos.slice();
+
+                function renderProducts(products) {
+                    productContainer.innerHTML = '';
+                    products.forEach(product => {
+                        const card = document.createElement('div');
+                        card.className = 'col-md-4';
+                        card.innerHTML = `
+                            <div class="card">
+                                <img src="/${product.image}" class="card-img-top" alt="Product Image">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">${product.name_product}</h5>
+                                    <p class="card-text fw-normal">Folio del producto: ${product.ID_folio}</p>
+                                    <p class="card-text fw-normal">Descripción: ${product.description}</p>
+                                    <p class="card-text fw-normal">Precio: ${product.unit_price}</p>
+                                    <p class="card-text fw-normal">Máquina: ${product.para_que_maquina}</p>
+                                    <p class="card-text fw-normal">Tipo de máquina: ${product.tipo_maquina}</p>
+                                    <label for="quantity" class="form-label">Cantidad:</label>
+                                    <input type="number" id="quantity" name="quantity" min="1" value="1" class="form-control">
+                                                                        <button type="button" class="btn btn-primary mt-2 carritoadd" 
+                                    data-name="${product.name_product}" 
+                                    data-price="${product.unit_price}"
+                                    data-folio="${product.ID_folio}">
+                                    Añadir al carrito
+                                </button>
+                                </div>
+                            </div>
+                        `;
+                        productContainer.appendChild(card);
+                    });
+                }
+
+                renderProducts(productos);
+
+                document.getElementById('searchProducts').addEventListener('input', function () {
+                    const searchValue = this.value.toLowerCase();
+                    const filteredProducts = originalProducts.filter(product =>
+                        product.name_product.toLowerCase().includes(searchValue)
+                    );
+                    renderProducts(filteredProducts);
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+
+        document.querySelector('.navbar-nav .nav-link[href="#"]').addEventListener('click', function () {
+            updateCartList();
+            const cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+            cartModal.show();
+        });
+
+        function updateCartList() {
+            const cartItemList = document.getElementById('cartItemList');
+            cartItemList.innerHTML = '';
+            let totalPrice = 0;
+            cartItems.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            ${item.name} - Cantidad: ${item.quantity} - Precio unitario: $${item.price.toFixed(2)}
+                        </div>
+                        <div>
+                            <button class="btn btn-danger btn-sm eliminar-producto" data-name="${item.name}">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+                cartItemList.appendChild(listItem);
+                totalPrice += item.price * item.quantity;
+            });
+
+            const modalFooter = document.querySelector('.modal-footer');
+            modalFooter.innerHTML = '';
+
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn btn-secondary';
+            closeButton.setAttribute('data-bs-dismiss', 'modal');
+            closeButton.textContent = 'Cerrar';
+
+            const addPedidoButton = document.createElement('button');
+            addPedidoButton.type = 'button';
+            addPedidoButton.className = 'btn btn-success';
+            addPedidoButton.id = 'addpedido';
+            addPedidoButton.textContent = 'Realizar pedido';
+
+            const descuento = document.createElement('input');
+            descuento.type = 'number';
+            descuento.placeholder = "Agregue un descuento al pedido en %";
+            descuento.className = 'form-control';
+            descuento.min = "0";
+            descuento.max="100";
+            descuento.defaultValue = "0";
+            modalFooter.appendChild(descuento);
+
+            const totalSpan = document.createElement('span');
+            let discountedPrice = totalPrice; 
+            const discountValue = parseFloat(descuento.value);
+            if (discountValue > 0) {
+                discountedPrice = totalPrice - (totalPrice * (discountValue / 100));
+                totalSpan.textContent = `Total con descuento (${discountValue}%): $${discountedPrice.toFixed(2)} (Precio original: ${totalPrice.toFixed(2)})`;
+            } else {
+                totalSpan.textContent = `Total: $${totalPrice.toFixed(2)}`;
+            }
+            modalFooter.appendChild(totalSpan);
+
+            descuento.addEventListener('input', function () {
+                const discountValue = parseFloat(descuento.value);
+                if (discountValue > 0) {
+                    discountedPrice = totalPrice - (totalPrice * (discountValue / 100));
+                    totalSpan.textContent = `Total con descuento (${discountValue}%): $${discountedPrice.toFixed(2)} (Precio original: ${totalPrice.toFixed(2)})`;
+                } else {
+                    totalSpan.textContent = `Total: $${totalPrice.toFixed(2)}`;
+                    discountedPrice = totalPrice; 
+                }
+            });
+
+            addPedidoButton.addEventListener('click', function () {
+                handlePedidoCreation(discountedPrice, parseFloat(descuento.value));
+            });
+            
+            const personSelect = document.createElement('select');
+            personSelect.id = 'personOptions';
+            personSelect.className = 'form-select';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.id="0";
+            defaultOption.textContent = 'Cliente sin registrar';
+            
+            personSelect.appendChild(defaultOption);
+
+            fetch('http://localhost:3000/persons/')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(person => {
+                        const option = document.createElement('option');
+                        option.id=person.ID_person;
+                        option.value = person.name; 
+                        option.textContent = person.name; 
+                        personSelect.appendChild(option);
+                    });
+                    
+                    modalFooter.appendChild(personSelect);
+                    modalFooter.appendChild(addPedidoButton);
+                    modalFooter.appendChild(closeButton);
+                })
+                .catch(error => {
+                    console.error('Error fetching persons:', error);
+                    modalFooter.appendChild(personSelect);
+                    modalFooter.appendChild(addPedidoButton);
+                    modalFooter.appendChild(closeButton);
+                });
+        }
+
+        document.addEventListener('click', function (event) {
+        if (event.target.classList.contains('carritoadd')) {
+            const productName = event.target.getAttribute('data-name');
+            const productQuantity = parseInt(event.target.closest('.card-body').querySelector('#quantity').value);
+            const productPrice = parseFloat(event.target.getAttribute('data-price'));
+            const productFolio = event.target.getAttribute('data-folio');  
+
+            const existingProductIndex = cartItems.findIndex(item => item.folio === productFolio);
+
+            if (existingProductIndex >= 0) {
+                cartItems[existingProductIndex].quantity += productQuantity;
+            } else {
+                cartItems.push({
+                    name: productName,
+                    quantity: productQuantity,
+                    price: productPrice,
+                    folio: productFolio  
+                });
+            }
+
+            updateCartList();
+        }
+
+        if (event.target.classList.contains('eliminar-producto')) {
+            const productName = event.target.getAttribute('data-name');
+            cartItems = cartItems.filter(item => item.name !== productName);
+            updateCartList();
+        }
+    });
+
+        async function handlePedidoCreation(totalPrice, discountValue) {
+    const personSelect = document.getElementById('personOptions');
+    let personID;
+    let personName;
+
+    if (cartItems.length === 0) {
+        alert('El carrito está vacío. Agrega al menos un producto para crear el pedido.');
+        return;
+    }
+
+    if (personSelect.value === 'Cliente sin registrar') {
+        personID = null;
+        personName = prompt('Por favor ingrese el nombre del cliente:');
+        if (!personName) {
+            alert('Debe ingresar un nombre para el cliente.');
+            return;
+        }
+    } else {
+        personID = parseInt(personSelect.options[personSelect.selectedIndex].id);
+        personName = personSelect.value;
+    }
+
+    const pedidoData = {
+        ID_person: personID,
+        name_person: personName,
+        descuento: discountValue,
+        amount: totalPrice,
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/pedidos/createPedido', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(pedidoData)
+        });
+
+        if (response.ok) {
+            const pedido = await response.json();
+            const ID_pedido = pedido.ID_pedido;
+
+            for (const item of cartItems) {
+                await addProductToPedido(ID_pedido, item);
+            }
+
+            alert("Pedido registrado exitosamente");
+            cartItems = [];
+            updateCartList();
+        } else {
+            alert("Error al crear el pedido");
+        }
+    } catch (error) {
+        console.error('Error al realizar la solicitud:', error);
+        alert('Ocurrió un error al realizar la solicitud. Por favor, intenta nuevamente.');
+    }
+}
+        async function createPedido(pedidoData) {
+        try {
+            const response = await fetch('http://localhost:3000/pedidos/createPedido', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(pedidoData)
+            });
+
+            if (response.ok) {
+                const pedido = await response.json();
+                const ID_pedido = pedido.ID_pedido;
+
+                for (const item of cartItems) {
+                    await addProductToPedido(ID_pedido, item);
+                }
+
+                alert("Pedido registrado");
+                cartItems = [];
+                updateCartList();
+            } else {
+                alert("Error al crear el pedido");
+            }
+        } catch (error) {
+            console.error('Error al realizar la solicitud:', error);
+            alert('Ocurrió un error al realizar la solicitud. Por favor, intenta nuevamente.');
+        }
+    }
+
+    async function addProductToPedido(ID_pedido, item) {
+    const productoPedidoData = {
+        ID_pedido: ID_pedido,
+        ID_folio: item.folio,
+        cantidad: item.quantity
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/pedido-productos', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productoPedidoData)
+        });
+
+        if (!response.ok) {
+            console.error('Error al agregar producto al pedido:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error al agregar producto al pedido:', error);
+    }
+}
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

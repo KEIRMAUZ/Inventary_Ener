@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Empresa - productos</title>
+</head>
+<body>
+    <style>
+        .card-body {
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            white-space: nowrap;
+            height: 3rem;
+        }
+        .col-id { width: 100px; }
+        .col-name { width: 200px; }
+        .col-description { width: 300px; }
+    </style>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-2 mb-4">
+                <div class="list-group">
+                    <button class="list-group-item list-group-item-action btn btn-primary mb-2" ><a href="http://localhost:3000/surtir-and-productos/create" class="link-underline-light">Crear relación</a></button>
+                    <button class="list-group-item list-group-item-action btn btn-danger"><a href="http://localhost:3000/surtir-and-productos/delete" class="link-danger link-underline-light">Borrar registro</a></button>
+                    <button class="list-group-item list-group-item-action btn btn-success" id="refreshPage">
+                    <a class="link-success link-underline-light">Refresh</a></button>
+                    <button class="list-group-item list-group-item-action btn btn-dark"><a id="products" href="http://localhost:3000/surtir-productos/getSurtir" class="link-dark link-underline-light">Ver empresas</a></button>
+                    <button class="list-group-item list-group-item-action btn btn-dark"><a  href="http://localhost:3000/products/inventario" class="link-dark link-underline-light">Productos</a></button>
+                    <button class="list-group-item list-group-item-action btn btn-primary"><a id="products" href="http://localhost:3000/" class="link-primary link-underline-light">Panel de control</a></button>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4>Relacion empresa - producto</h4>
+                        <input type="text" id="search" class="form-control w-50" placeholder="Buscar...">
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-hover" id="surtirProductoTable">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">ID de la empresa</th>
+                                    <th scope="col">Nombre de la empresa</th>
+                                    <th scope="col">Contacto de la empresa</th>
+                                    <th scope="col">Folio del producto</th>   
+                                    <th scope="col">Nombre del producto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('search').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#surtirProductoTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        document.getElementById("refreshPage").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true); 
+        });
+
+        document.querySelector("#refreshPage a").addEventListener("click", function(event) {
+            event.preventDefault();
+            location.reload(true);
+        });
+
+        async function fetchSurtirProductos() {
+            try {
+                const response = await fetch('http://localhost:3000/surtir-and-productos');
+                const surtirProducto = await response.json();
+
+                const tableBody = document.querySelector('#surtirProductoTable tbody');
+                tableBody.innerHTML = '';
+
+                surtirProducto.forEach(surtirProduct => {
+                    const rowSpan = surtirProduct.product.length || 1;
+                    const firstRow = `
+                        <tr>
+                            <td rowspan="${rowSpan}">${surtirProduct.ID_surtir}</td>
+                            <td rowspan="${rowSpan}">${surtirProduct.nombre_empresa}</td>
+                            <td rowspan="${rowSpan}">${surtirProduct.contacto}</td>
+                            ${surtirProduct.product.length > 0 ? `
+                                <td>${surtirProduct.product[0].ID_folio}</td>
+                                <td>${surtirProduct.product[0].name_product}</td>
+                            ` : `<td>Sin asociar</td>
+                                <td>Sin asociar</td>
+                            `}
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', firstRow);
+
+                    for (let i = 1; i < surtirProduct.product.length; i++) {
+                        const productRow = `
+                            <tr>
+                                <td>${surtirProduct.product[i].ID_folio}</td>
+                                <td>${surtirProduct.product[i].name_product}</td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', productRow);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchSurtirProductos);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</body>
+</html>

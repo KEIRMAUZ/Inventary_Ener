@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <title>Products inventary</title>
+        <title>Productos faltantes</title>
     </head>
     <body>
 
@@ -25,12 +25,7 @@
         <div class="row">
             <div class="col-md-2 mb-4">
                     <div class="list-group">
-                        <button class="list-group-item list-group-item-action btn btn-primary mb-2" ><a href="http://localhost:3000/products/createProduct" class="link-underline-light">Crear producto</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-warning mb-2"><a href="http://localhost:3000/products/update" class="link-warning link-underline-light">Actualizar producto</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-danger"><a href="http://localhost:3000/products/delete" class="link-danger link-underline-light">Borrar producto</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/qualitys/getQualitys" class="link-dark link-underline-light">Ver calidades</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/categorys/getCategorys" class="link-dark link-underline-light">Ver categorias</a></button>
-                        <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/products/faltantes" class="link-dark link-underline-light">Productos casi agotados</a></button>
+
                         <button class="list-group-item list-group-item-action btn btn-dark"><a href="http://localhost:3000/encargar-productos/get" class="link-dark link-underline-light">Encargar productos</a></button>
                         <button class="list-group-item list-group-item-action btn btn-success" id="refreshPage">
                         <a class="link-success link-underline-light">Refresh</a></button>
@@ -41,7 +36,7 @@
             <div class="col-md-10">
             <div class="card">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4>Lista de Productos</h4>
+                <h4>Lista de productos con bajo stock</h4>
                 <input type="text" id="searchProducts" class="form-control w-50" placeholder="Buscar producto...">
                 </div>
                 <div class="card-body">
@@ -62,7 +57,7 @@
                         <th scope="col">Stock</th>
                         <th scope="col">Medidas</th>
                         <th scope="col">Lugar de almacenamiento</th>
-                        <th scope="col">Imagen</th>             
+                        <th scope="col">Imagen</th>            
                     </tr>
                     </thead>
                     <tbody>
@@ -107,7 +102,8 @@
                 tableBody.innerHTML = '';
 
                 productos.forEach(products => {
-                    const row = document.createElement('tr');
+                    if(products.stock <= 50){
+                        const row = document.createElement('tr');
                     row.innerHTML = 
                         `<td>${products.ID_folio}</td>
                         <td>${products.ID_num_part}</td>
@@ -123,8 +119,9 @@
                         <td>${products.stock}</td>
                         <td>${products.medidas}</td>
                         <td>${products.lugar_almacenamiento}</td>
-                        <td>${products.image ? `<img src="/${products.image}" alt="Imagen" width="50rem" height="50rem">` : 'No image'}</td>` ;
+                        <td>${products.image ? `<img src="/${products.image}" alt="Imagen" width="50rem" height="50rem">` : 'No image'}</td>`;
                     tableBody.appendChild(row);
+                    }
                 });
             } catch (error) {
                 console.error('Error fetching products:', error);
@@ -135,7 +132,6 @@
 
         
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
 
         document.getElementById("refreshPage").addEventListener("click", function(event) {
@@ -151,3 +147,4 @@
 
     </body>
 </html>
+<!--QUIERO QUE EN ESTE FORMULARIO SE MUESTREN LOS PRODUCTOS CUYO STOCK SEA 50 O MENOS-->

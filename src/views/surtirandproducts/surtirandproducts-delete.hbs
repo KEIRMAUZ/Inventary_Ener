@@ -45,11 +45,15 @@
             <p class="text-center">{{message}}</p>
             <form action="/product/delete" id="deleteForm">
                 <div class="mb-3">
+                    <label for="surtirID" class="form-label">ID de la empresa relacionada:</label>
+                    <input type="number" class="form-control" id="surtirID" name="ID_surtir" required>
+                </div>
+                <div class="mb-3">
                     <label for="productId" class="form-label">ID del producto a eliminar:</label>
                     <input type="number" class="form-control" id="productId" name="ID_folio" required>
                 </div>
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="http://localhost:3000/products/inventario" class="btn btn-secondary">Volver</a>
+                    <a href="http://localhost:3000/surtir-and-productos/get" class="btn btn-secondary">Volver</a>
                     <input type="submit" value="Borrar" class="btn btn-danger" id="btnBorrar">
                 </div>
             </form>
@@ -60,21 +64,21 @@
         document.getElementById('deleteForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const productId = document.getElementById('productId').value;
-
+            const surtirID= document.getElementById('surtirID').value;
             if (productId) {
                 try {
-                    const response = await fetch(`http://localhost:3000/products/${productId}`, {
+                    const response = await fetch(`http://localhost:3000/surtir-and-productos/${surtirID}/${productId}`, {
                         method: 'DELETE',
                     });
 
                     if (response.ok) {
-                        alert('Producto eliminado correctamente');
+                        alert('Relacion eliminada correctamente');
                     } else {
-                        alert('Error al borrar el producto. Verifique que el producto no esté en la lista de productos a encargar');
+                        alert('Error al borrar la relacion.');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('Error al borrar el producto');
+                    alert('Error al borrar la relacion');
                 }
             } else {
                 alert('Por favor, introduce un ID válido');

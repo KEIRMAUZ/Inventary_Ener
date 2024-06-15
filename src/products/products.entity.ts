@@ -1,8 +1,8 @@
-import {Column,Entity,PrimaryColumn,ManyToOne,JoinColumn,JoinTable,ManyToMany} from 'typeorm'
+import {Column,Entity,PrimaryColumn,ManyToOne,OneToMany,JoinColumn,JoinTable,ManyToMany} from 'typeorm'
 import {Category} from 'src/categorys/categorys.entity'
 import {Quality} from 'src/qualitys/quality.entity'
 import { Surtir_producto } from 'src/surtir_productos/surtir_productos.entity'
-import { Pedido } from 'src/pedidos/pedidos.entity'
+import { ProductoPedido } from 'src/pedidos_products/pedidos_products.entity'
 
 
 @Entity('products')
@@ -64,6 +64,6 @@ export class Product {
     @ManyToMany(()=> Surtir_producto)
     surtirProducto: Surtir_producto[]
 
-    @ManyToMany( ()=> Pedido)
-    pedido:Pedido[]
+    @OneToMany(() => ProductoPedido, productoPedido => productoPedido.product)
+    productoPedidos: ProductoPedido[];
 }

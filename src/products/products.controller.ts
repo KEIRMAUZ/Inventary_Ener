@@ -19,6 +19,12 @@ export class ProductsController {
     getInventario(){
         return{};
     }
+
+    @Get('faltantes')
+    @Render('products/faltantes-product')
+    faltanteInventario(){
+        return{};
+    }
     
     @Get('createProduct')
     @Render('products/create-product')
@@ -35,6 +41,12 @@ export class ProductsController {
     @Get('update')
     @Render('products/update-product')
     updateProductView(){
+        return{}
+    }
+
+    @Get('faltantes')
+    @Render('products/faltantes-product')
+    faltanteProductView(){
         return{}
     }
 

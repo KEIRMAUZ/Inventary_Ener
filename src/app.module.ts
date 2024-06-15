@@ -13,6 +13,7 @@ import { RolesModule } from './roles/roles.module';
 import { PedidosModule } from './pedidos/pedidos.module';
 import { EncargarProductosModule } from './encargar_productos/encargar_productos.module';
 import { SurtirAndProductosModule } from './surtir-and-productos/surtir-and-productos.module';
+import { PedidosProductsModule } from './pedidos_products/pedidos_products.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -36,7 +37,8 @@ import { SurtirAndProductosModule } from './surtir-and-productos/surtir-and-prod
     RolesModule,
     PedidosModule,
     EncargarProductosModule,
-    SurtirAndProductosModule
+    SurtirAndProductosModule,
+    PedidosProductsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -19,7 +19,7 @@ export class EncargarProductosService {
 
         const pedidoFound = await this.encargoRepository.findOne({
             where:{
-                ID_folio: encargo.ID_folio
+                ID_folio
             }
         })
 
@@ -32,7 +32,9 @@ export class EncargarProductosService {
     }
 
     getEncargos(){
-        return this.encargoRepository.find()
+        return this.encargoRepository.find({
+            relations:['product']
+        })
     }
 
     async getEncargo(ID_folio:number){

@@ -1,82 +1,83 @@
-import { Injectable, HttpException,HttpStatus } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Repository, DeleteResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pedido } from './pedidos.entity';
+import { ProductoPedido } from 'src/pedidos_products/pedidos_products.entity';
 import { createPedidoDto } from './Dto/create-pedido.dto';
 import { updatePedidoDto } from './Dto/update-pedido-dto';
 
-
 @Injectable()
-export class PedidosService {
+    export class PedidosService {
+    constructor(
+        @InjectRepository(Pedido) private pedidoRepository: Repository<Pedido>,
+        @InjectRepository(ProductoPedido) private productoPedidoRepository: Repository<ProductoPedido>,
+    ) {}
 
-    constructor(@InjectRepository(Pedido) private pedidoRepository:Repository<Pedido>){}
+    async createPedido(pedido: createPedidoDto) {
+        const newPedido = this.pedidoRepository.create(pedido);
+        return this.pedidoRepository.save(newPedido);
+    }
 
-    async createPedido(pedido: createPedidoDto){
+    getPedidos() {
+        return this.pedidoRepository.find({
+        relations: ['productoPedidos', 'productoPedidos.product', 'person'],
+        });
+    }
 
-        const {ID_person} = pedido
-
-        if(!ID_person){
-            throw new HttpException("Campo ID de la persona necesario para la creacion del pedido",HttpStatus.BAD_REQUEST)
-        }
-
+    async getPedido(ID_pedido: number) {
         const pedidoFound = await this.pedidoRepository.findOne({
-            where:{
-                ID_pedido: pedido.ID_pedido
-            }
-        })
-        if(pedidoFound){
-            return new HttpException("Este pedido ya existe",HttpStatus.CONFLICT)
+        where: {
+            ID_pedido,
+        },
+        relations: ['productoPedidos', 'productoPedidos.product'],
+        });
+        if (!pedidoFound) {
+        throw new HttpException("Pedido no encontrado", HttpStatus.NOT_FOUND);
         }
-        const newPedido = this.pedidoRepository.create(pedido)
-        return this.pedidoRepository.save(newPedido)
+        return pedidoFound;
     }
 
-    getPedidos(){
-        return this.pedidoRepository.find()    
-    }
-
-    async getPedido(ID_pedido:number){
+    async updatePedido(ID_pedido: number, pedido: updatePedidoDto) {
         const pedidoFound = await this.pedidoRepository.findOne({
-            where:{
-                ID_pedido
-            }
-        })
-        if(!pedidoFound){
-            return new HttpException("Pedido no encontrado verifique el identificador",HttpStatus.NOT_FOUND)
+        where: {
+            ID_pedido,
+        },
+        relations: ['productoPedidos', 'productoPedidos.product'],
+        });
+
+        if (!pedidoFound) {
+        throw new HttpException("El pedido no fue encontrado", HttpStatus.NOT_FOUND);
         }
-        return pedidoFound
+
+        const updatePedido = Object.assign(pedidoFound, pedido);
+
+        return this.pedidoRepository.save(updatePedido);
     }
 
-    async updatePedido(ID_pedido:number,pedido:updatePedidoDto){
+    async deletePedido(ID_pedido: number): Promise<DeleteResult> {
+        
         const pedidoFound = await this.pedidoRepository.findOne({
-            where:{
-                ID_pedido
-            }
-        })
+            where: { ID_pedido },
+            relations: ['productoPedidos'],
+        });
 
-        if(!pedidoFound){
-            return new HttpException("El pedido no fue encontrado verifique el identificador",HttpStatus.NOT_FOUND)
+        if (!pedidoFound) {
+            throw new HttpException('Pedido no encontrado', HttpStatus.NOT_FOUND);
         }
 
-        const updatePedido = Object.assign(pedidoFound,pedido)
+        try {
+            
+            await Promise.all(pedidoFound.productoPedidos.map(async productoPedido => {
+                await this.pedidoRepository.manager.remove(productoPedido);
+            }));
 
-        return this.pedidoRepository.save(updatePedido)
-    }
+            
+            const deleteResult = await this.pedidoRepository.delete(ID_pedido);
 
-    async deletePedido(ID_pedido:number){
-
-        const pedidoFound = await this.pedidoRepository.findOne({
-
-            where:{
-                ID_pedido
-            }
-        })
-
-        if(!pedidoFound){
-
-            return new HttpException("Identificador invalido",HttpStatus.NOT_FOUND)
+            return deleteResult;
+        } catch (error) {
+            throw new HttpException(`Error al eliminar pedido: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return this.pedidoRepository.delete(ID_pedido)
     }
+
 }

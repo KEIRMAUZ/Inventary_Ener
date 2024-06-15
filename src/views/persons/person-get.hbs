@@ -48,7 +48,7 @@
                         <th scope="col">Nombre</th>
                         <th scope="col">Apellido</th>   
                         <th scope="col">Telefono</th>
-                        <th scope="col">ID del rol</th>             
+                        <th scope="col">Rol que desempeña</th>             
                     </tr>
                     </thead>
                     <tbody>
@@ -101,7 +101,7 @@
                             <td>${person.name}</td>
                             <td>${person.lastname}</td>
                             <td>${person.phone}</td>
-                            <td>${person.ID_rol}</td>
+                            <td>${person.role.role_name}</td>
                         `;
                         tableBody.appendChild(row);
                     });

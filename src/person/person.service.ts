@@ -49,7 +49,9 @@ export class PersonService {
     }
 
     getPersons(){
-        return this.personRepository.find()
+        return this.personRepository.find({
+            relations:['role']
+        })
     }
 
     async getPerson (ID_person:number){

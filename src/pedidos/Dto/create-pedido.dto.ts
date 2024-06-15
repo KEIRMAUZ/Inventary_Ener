@@ -2,9 +2,10 @@ import { IsNotEmpty } from "class-validator"
 
 export class createPedidoDto{
     ID_pedido:number
-
-    @IsNotEmpty({message:'El campo es requerido'})
-    ID_person:number
+    ID_person?:number
+    name_person?:string
     fecha:Date
+    descuento:number
     amount:number
+
 }
